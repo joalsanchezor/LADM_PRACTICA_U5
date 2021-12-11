@@ -7,8 +7,16 @@
     android:orientation="vertical">
 
 
+    <TextView
+        android:id="@+id/ubicacionText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:textAlignment="center"
+        />
+
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/busquedaLugar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"

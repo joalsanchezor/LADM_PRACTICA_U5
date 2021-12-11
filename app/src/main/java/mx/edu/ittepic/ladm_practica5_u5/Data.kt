@@ -30,26 +30,4 @@ class Data {
     private fun invertir(valor:Double):Double{
         return valor*-1
     }
-
-    fun lugares(context: Context): ArrayList<Data>{
-        var lugares = ArrayList<Data>()
-        baseRemota.collection("Lugares")
-            .addSnapshotListener { value, error ->
-                if(error != null){
-                    Toast.makeText(context, "ERROR: ${error.message}", Toast.LENGTH_LONG).show()
-                    return@addSnapshotListener
-                }
-                lugares.clear()
-                for(document in value!!){
-                    var data = Data()
-                    data.nombre = document.getString("nombre").toString()
-                    data.posicion1 = document.getGeoPoint("posicion1")!!
-                    data.posicion2 = document.getGeoPoint("posicion2")!!
-
-                    lugares.add(data)
-                }
-            }
-
-        return lugares
-    }
 }

@@ -2,7 +2,11 @@ package mx.edu.ittepic.ladm_practica5_u5
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -25,6 +29,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
+    lateinit var locacion : LocationManager
     var baseRemota = FirebaseFirestore.getInstance()
     var lugares = ArrayList<Data>()
 
@@ -50,11 +55,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         getLugares()
-
+        ubicacionText.setText("Tepic")
         btnUbicacion.setOnClickListener {
-            Toast.makeText(this, "UBICACIÓN", Toast.LENGTH_LONG).show()
-            miUbicacion()
+
+            if(busquedaLugar.text.toString().equals("")){
+                Toast.makeText(this, "CAMPO VACÍO", Toast.LENGTH_LONG).show()
+            }else{
+                buscarLugar(busquedaLugar.text.toString())
+            }
         }
+
+        locacion = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        var oyente = Oyente(this)
+        locacion.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,01f,oyente)
     }
 
     /**
@@ -122,6 +135,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
     }
 
+    private fun buscarLugar(ubicacion : String){
+        for(lugar in lugares){
+            if(ubicacion.equals(lugar.nombre)){
+                AlertDialog.Builder(this)
+                    .setMessage("¿Desea ver información del sitio?")
+                    .setTitle("Información")
+                    .setPositiveButton("Sí"){p, q->
+                        busquedaLugar.setText("")
+                        var nueva = Intent(this,DescripcionLugar::class.java)
+                        nueva.putExtra("ubicacion",ubicacion)
+                        startActivity(nueva)}
+                       //setContentView(R.layout.activity_descripcion_lugar)}
+                    .setNegativeButton("No"){p, q->}
+                    .show()
+            }
+        }
+    }
+
     fun getLugares(){
         baseRemota.collection("Lugares")
             .addSnapshotListener { value, error ->
@@ -141,4 +172,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
     }
 
+}
+
+class Oyente(puntero:MapsActivity) : LocationListener {
+    var p = puntero
+    override fun onLocationChanged(location: Location) {
+        var geoPosicion = GeoPoint(location.latitude, location.longitude)
+
+        for(item in p.lugares){
+            if(item.estoyEn(geoPosicion)){
+                p.ubicacionText.setText(item.nombre)
+                AlertDialog.Builder(p)
+                    .setMessage("SE ENCUENTRA EN ${item.nombre}")
+                    .setTitle("ATENCIÓN")
+                    .setPositiveButton("OK"){p, q->}
+                    .show()
+            }//if
+        }//for
+    }
 }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".DescripcionLugar">
+
+    <TextView
+        android:id="@+id/titulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="30dp"
+        android:textAlignment="center"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/descripcion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:text="Descripción: " />
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:id="@+id/contenidoDescripcion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
+
+    <Button
+        android:layout_marginTop="30dp"
+        android:id="@+id/regresar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Regresar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:id="@+id/imagen1"
+                android:layout_width="400dp"
+                android:layout_height="400dp"/>
+
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:id="@+id/imagen2"
+                android:layout_width="400dp"
+                android:layout_height="400dp"/>
+
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:id="@+id/imagen3"
+                android:layout_width="400dp"
+                android:layout_height="400dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
