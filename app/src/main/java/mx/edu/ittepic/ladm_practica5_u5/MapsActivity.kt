@@ -66,6 +66,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
+        btnAcerca.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setMessage("INTEGRANTES: \n\nJORGE ALBERTO SÁNCHEZ ORTIZ\nJOSÉ MIGUEL GARCÍA ACEVEDO\nAGUSTIN DE JESUS HERNANDEZ MONTERO\nALEJANDRO SANCHEZ LOPEZ")
+                .setTitle("INTEGRANTES")
+                .setPositiveButton("CERRAR"){p, q->}
+                .show()
+        }
+
         locacion = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         var oyente = Oyente(this)
         locacion.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,01f,oyente)
