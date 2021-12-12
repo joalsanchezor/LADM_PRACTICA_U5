@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.startActivity
 import com.google.android.gms.location.LocationServices
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -68,6 +69,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         locacion = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         var oyente = Oyente(this)
         locacion.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,01f,oyente)
+
     }
 
     /**
@@ -101,13 +103,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 //var geoPosicion = GeoPoint(it.latitude, it.longitude)
                 val tepic = LatLng(it.latitude, it.longitude)
                 mMap.addMarker(MarkerOptions().position(tepic).title("Mi ubicación"))
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(tepic))
-
+                //mMap.moveCamera(CameraUpdateFactory.newLatLng(tepic))
+                mMap.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(
+                            it.getLatitude(),
+                            it.getLongitude()
+                        ), 12.0f
+                    )
+                )
                 mMap.uiSettings.isZoomControlsEnabled = true
+                miUbicacion()
             }
     }
 
-    private fun miUbicacion(){
+     fun miUbicacion(){
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -124,10 +134,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 for(item in lugares){
                     if(item.estoyEn(geoPosicion)){
                         AlertDialog.Builder(this)
-                            .setMessage("SE ENCUENTRA EN ${item.nombre}")
+                            .setMessage("Ver información de ${item.nombre}")
                             .setTitle("ATENCIÓN")
-                            .setPositiveButton("OK"){p, q->}
+                            .setPositiveButton("OK"){p, q->
+                                var nueva = Intent(this,DescripcionLugar::class.java)
+                                nueva.putExtra("ubicacion",item.nombre)
+                                startActivity(nueva)
+                            }.setNegativeButton("No"){p, q->}
                             .show()
+                        break
                     }
                 }
             }.addOnFailureListener {
@@ -135,7 +150,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
     }
 
-    private fun buscarLugar(ubicacion : String){
+    fun buscarLugar(ubicacion : String){
         for(lugar in lugares){
             if(ubicacion.equals(lugar.nombre)){
                 AlertDialog.Builder(this)
@@ -153,7 +168,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    fun getLugares(){
+     fun getLugares(){
         baseRemota.collection("Lugares")
             .addSnapshotListener { value, error ->
                 if(error != null){
@@ -183,9 +198,11 @@ class Oyente(puntero:MapsActivity) : LocationListener {
             if(item.estoyEn(geoPosicion)){
                 p.ubicacionText.setText(item.nombre)
                 AlertDialog.Builder(p)
-                    .setMessage("SE ENCUENTRA EN ${item.nombre}")
+                    .setMessage("Usted se encuentra en ${item.nombre}")
                     .setTitle("ATENCIÓN")
-                    .setPositiveButton("OK"){p, q->}
+                    .setPositiveButton("OK"){r, q->
+                        p.buscarLugar(item.nombre)
+                    }
                     .show()
             }//if
         }//for
